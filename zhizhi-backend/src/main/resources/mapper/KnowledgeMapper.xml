@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhizhi.module.knowledge.mapper.KnowledgeMapper">
+
+    <resultMap id="knowledgeVOMap" type="com.zhizhi.module.knowledge.dto.KnowledgeVO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="summary" column="summary"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="isVectorized" column="is_vectorized"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 分页列表（关联分类名、标签筛选） -->
+    <select id="selectPageVO" resultMap="knowledgeVOMap">
+        SELECT k.id, k.title, k.summary, k.category_id, c.name AS category_name,
+               k.view_count, k.is_vectorized, k.created_at, k.updated_at
+        FROM knowledge k
+        LEFT JOIN category c ON k.category_id = c.id AND c.deleted = 0
+        <if test="tagId != null">
+            INNER JOIN knowledge_tag kt ON k.id = kt.knowledge_id AND kt.tag_id = #{tagId}
+        </if>
+        WHERE k.deleted = 0
+        <if test="userId != null">
+            AND k.user_id = #{userId}
+        </if>
+        <if test="categoryId != null">
+            AND k.category_id = #{categoryId}
+        </if>
+        ORDER BY k.updated_at DESC
+    </select>
+
+    <!-- 详情（含标签列表） -->
+    <select id="selectDetailVO" resultType="com.zhizhi.module.knowledge.dto.KnowledgeVO">
+        SELECT k.id, k.title, k.content, k.summary, k.category_id,
+               c.name AS category_name, k.view_count, k.is_vectorized,
+               k.created_at, k.updated_at,
+               GROUP_CONCAT(t.name ORDER BY t.id SEPARATOR ',') AS tags_str
+        FROM knowledge k
+        LEFT JOIN category c ON k.category_id = c.id AND c.deleted = 0
+        LEFT JOIN knowledge_tag kt ON k.id = kt.knowledge_id
+        LEFT JOIN tag t ON kt.tag_id = t.id AND t.deleted = 0
+        WHERE k.id = #{id} AND k.deleted = 0
+        GROUP BY k.id
+    </select>
+
+    <!-- MySQL 全文索引搜索（ngram） -->
+    <select id="searchByFullText" resultType="com.zhizhi.module.knowledge.dto.KnowledgeVO">
+        SELECT k.id,
+               k.title,
+               k.summary,
+               k.category_id,
+               k.view_count,
+               k.is_vectorized,
+               k.created_at,
+               k.updated_at,
+               MATCH(k.title, k.content) AGAINST (#{keyword} IN BOOLEAN MODE) AS score
+        FROM knowledge k
+        WHERE k.deleted = 0
+          AND MATCH(k.title, k.content) AGAINST (#{keyword} IN BOOLEAN MODE)
+          <if test="userId != null">
+              AND k.user_id = #{userId}
+          </if>
+        ORDER BY score DESC
+        LIMIT 20
+    </select>
+
+</mapper>

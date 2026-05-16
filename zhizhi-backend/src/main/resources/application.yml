@@ -1,0 +1,93 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: zhizhi-backend
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/zhizhi?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: ########
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 0
+      timeout: 3000ms
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  ai:
+    # DeepSeek 对话配置
+    openai:
+      api-key: ########
+      base-url: https://api.deepseek.com
+      chat:
+        options:
+          model: deepseek-chat
+          temperature: 0.7
+      embedding:
+        enabled: false
+
+    # Ollama 嵌入配置
+    ollama:
+      base-url: http://localhost:11434
+      embedding:
+        options:
+          model: nomic-embed-text
+      chat:
+        enabled: false
+
+    # 🔥 修复Chroma配置（核心！正确格式，解决Host报错）
+    vectorstore:
+      chroma:
+        # 集合名称
+        collection-name: zhizhi-knowledge
+        # 自动创建集合
+        initialize-schema: true
+        # 正确的连接地址（层级绝对不能错）
+        host: localhost
+        port: 8000
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  mapper-locations: classpath:mapper/*.xml
+
+# JWT
+jwt:
+  secret: zhizhi-secret-key-must-be-at-least-256-bits-long-for-HS256-algorithm
+  expiration: 86400000
+
+app:
+  token-blacklist-prefix: "blacklist:"
+
+# Knife4j
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+logging:
+  level:
+    com.zhizhi: debug

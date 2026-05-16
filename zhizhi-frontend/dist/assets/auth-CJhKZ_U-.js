@@ -1,0 +1,1 @@
+import{r as e}from"./request-DD2qQho1.js";const u={register:t=>e.post("/auth/register",t),login:t=>e.post("/auth/login",t),logout:()=>e.post("/auth/logout"),me:()=>e.get("/auth/me"),updateMe:t=>e.put("/auth/me",t)};export{u as a};
