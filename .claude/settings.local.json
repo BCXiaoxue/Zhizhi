@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(mvn compile *)",
-      "PowerShell(Get-Command mvn -ErrorAction SilentlyContinue; $env:JAVA_HOME; $env:MAVEN_HOME; \\(Get-Command java -ErrorAction SilentlyContinue\\).Source)"
-    ]
-  }
-}
