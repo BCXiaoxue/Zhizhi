@@ -1,0 +1,51 @@
+# ===== Java / Maven =====
+zhizhi-backend/target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*.log
+replay_pid*.log
+
+# ===== Spring Boot =====
+zhizhi-backend/src/main/resources/application-local.yml
+zhizhi-backend/src/main/resources/application-local.yaml
+zhizhi-backend/src/main/resources/application-secret.yml
+zhizhi-backend/src/main/resources/application-prod.yml
+
+# ===== Frontend (Vue / Vite) =====
+zhizhi-frontend/node_modules/
+zhizhi-frontend/dist/
+zhizhi-frontend/.env.local
+zhizhi-frontend/.env.*.local
+
+# ===== IDE =====
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Logs =====
+logs/
+*.log
+
+# ===== Misc =====
+*.tmp
+*.bak
+*.swp
